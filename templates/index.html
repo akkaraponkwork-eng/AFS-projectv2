@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0b0e14">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
+    <title>AFS Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js');
+        });
+      }
+    </script>
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="glow-bg-2"></div>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                </div>
+                <h2 class="logo-text">AFS</h2>
+            </div>
+            
+            <div class="sidebar-menu-label">MAIN</div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    Dashboard
+                </a>
+                <a href="#">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Logs History
+                </a>
+                <a href="#">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    Settings
+                </a>
+            </nav>
+            
+            <div class="sidebar-menu-label" style="margin-top: 30px;">HELP CENTER</div>
+            <nav class="sidebar-nav">
+                <a href="#">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    Support
+                </a>
+            </nav>
+            
+            <!-- <div class="sidebar-footer">
+                <div class="qr-box">
+                    <p>Open on Mobile</p>
+                    <div class="qr-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M7 7h.01"></path><path d="M17 7h.01"></path><path d="M7 17h.01"></path><path d="M17 17h.01"></path></svg>
+                    </div>
+                </div>
+            </div> -->
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="topbar">
+                <h2>Dashboard</h2>
+                <div class="topbar-right">
+                    <!-- <button class="icon-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </button>
+                    <button class="icon-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    </button> -->
+                    <div class="user-profile">
+                        <span>{{ username }}</span>
+                        <div class="avatar">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                    </div>
+                    <a href="/logout" class="icon-btn" style="text-decoration: none; margin-left: 8px; border-color: var(--danger); color: var(--danger);" title="Logout">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    </a>
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                
+                <!-- Status & Target Info (Top Row) -->
+                <div class="card stat-card" id="statusBox">
+                    <div class="stat-header">
+                        <span class="stat-title">System Status</span>
+                        <div class="status-indicator">
+                            <div class="status-icon success-icon hidden">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                            <div class="status-icon error-icon hidden">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                            </div>
+                            <span class="pulse-dot"></span>
+                        </div>
+                    </div>
+                    <h3 id="statusTitle">Ready to start</h3>
+                    <p id="statusMessage" class="stat-desc">Waiting for your command.</p>
+                </div>
+                
+                <div class="card stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Current Time</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <h3 id="liveTime">00:00:00</h3>
+                    <p id="liveDate" class="stat-desc">Loading...</p>
+                </div>
+                
+                <div class="card stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Automation Engine</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    </div>
+                    <h3>Playwright</h3>
+                    <p class="stat-desc">Headless Browser Engine</p>
+                </div>
+
+                <!-- Main Form (Control Panel) -->
+                <div class="card control-panel">
+                    <div class="card-header">
+                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;margin-right:8px;vertical-align:middle;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> Configuration Panel</h3>
+                    </div>
+                    
+                    <form id="automationForm">
+                        <!-- Removed Username & Password fields as they are handled by login -->
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="startRow">Start ID</label>
+                                <input type="number" id="startRow" name="startRow" value="1" min="1" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="endRow">End ID</label>
+                                <input type="number" id="endRow" name="endRow" value="39" min="1" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="timePeriod">Time</label>
+                                <select id="timePeriod" name="timePeriod" required>
+                                    <option value="morning">Morning 🌅</option>
+                                    <option value="afternoon">Afternoon ☀️</option>
+                                    <option value="night">Night 🌇</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label for="tempMin">Min Temp (°C)</label>
+                                <input type="number" id="tempMin" name="tempMin" value="35.9" step="0.1" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="tempMax">Max Temp (°C)</label>
+                                <input type="number" id="tempMax" name="tempMax" value="36.1" step="0.1" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="uValue">U Value</label>
+                                <select id="uValue" required>
+                                    <option value="skip">Skip</option>
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="random">Random (0-4)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="showBrowser" checked>
+                                <span class="slider"></span>
+                                <span class="toggle-label">Show Browser</span>
+                            </label>
+                            
+                            <div class="button-group">
+                                <button type="submit" id="submitBtn" class="btn-primary">
+                                    <span class="btn-text">Start Automation</span>
+                                    <div class="spinner hidden"></div>
+                                </button>
+                                <button type="button" id="stopBtn" class="btn-danger hidden">
+                                    <span class="btn-text">Stop</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Live Logs Terminal -->
+                <div class="card terminal-card">
+                    <div class="card-header terminal-header">
+                        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;margin-right:8px;vertical-align:middle;"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg> Live Terminal Output</h3>
+                        <div class="window-controls">
+                            <span class="dot dot-close"></span>
+                            <span class="dot dot-min"></span>
+                            <span class="dot dot-max"></span>
+                        </div>
+                    </div>
+                    <div id="logContainer" class="terminal-body">
+                        <div class="log-entry" style="color: #94a3b8;">> AFS System Initialized...</div>
+                        <div class="log-entry" style="color: #94a3b8;">> Waiting for execution command...</div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
