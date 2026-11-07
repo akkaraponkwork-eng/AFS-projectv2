@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0b0e14">
+    <title>AFS - Logs History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=3">
+</head>
+<body>
+    <div class="glow-bg"></div>
+    <div class="glow-bg-2"></div>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                </div>
+                <h2 class="logo-text">AFS</h2>
+            </div>
+            
+            <div class="sidebar-menu-label">MAIN</div>
+            <nav class="sidebar-nav">
+                <a href="/">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    Dashboard
+                </a>
+                <a href="/history" class="active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Logs History
+                </a>
+                <a href="/settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    Settings
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="topbar">
+                <h2>Execution Logs History</h2>
+                <div class="topbar-right">
+                    <div class="user-profile">
+                        <span>{{ username }}</span>
+                        <div class="avatar">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                    </div>
+                    <a href="/logout" class="icon-btn" style="text-decoration: none; margin-left: 8px; border-color: var(--danger); color: var(--danger);" title="Logout">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    </a>
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Summary Stats -->
+                <div class="card stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Total Runs</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    </div>
+                    <h3 id="statTotal">{{ stats.total }}</h3>
+                    <p class="stat-desc">รอบการทำงานทั้งหมด</p>
+                </div>
+
+                <div class="card stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Successful</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <h3 id="statSuccess" style="color: var(--success);">{{ stats.success }}</h3>
+                    <p class="stat-desc">ทำงานเสร็จสมบูรณ์</p>
+                </div>
+
+                <div class="card stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Items Filled</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <h3 id="statItems">{{ stats.total_items }}</h3>
+                    <p class="stat-desc">จำนวนรายการที่กรอกแล้ว</p>
+                </div>
+
+                <!-- History Table Card -->
+                <div class="card history-card">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
+                        <h3 style="flex: 1; margin: 0;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;margin-right:8px;vertical-align:middle;">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            ประวัติการทำงานย้อนหลัง
+                        </h3>
+                        {% if history and history|length > 0 %}
+                        <div style="display: flex; gap: 8px; align-items: center; flex: 0 0 auto;">
+                            <a href="/api/history/export" class="btn-secondary btn-sm" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                ส่งออก CSV
+                            </a>
+                            <button id="clearHistoryBtn" class="btn-danger btn-sm" onclick="clearHistory()">
+                                ล้างประวัติทั้งหมด
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if history and history|length > 0 %}
+                    <div class="table-responsive">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>วัน-เวลา</th>
+                                    <th>ผู้ใช้งาน</th>
+                                    <th>ช่วงลำดับ</th>
+                                    <th>รอบเวลา</th>
+                                    <th>อุณหภูมิ / U</th>
+                                    <th>สถานะ</th>
+                                    <th>จำนวน</th>
+                                    <th>การกระทำ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in history %}
+                                <tr>
+                                    <td>{{ item.timestamp }}</td>
+                                    <td>{{ item.username }}</td>
+                                    <td><strong>{{ item.start_row }}</strong> ถึง <strong>{{ item.end_row }}</strong></td>
+                                    <td>
+                                        {% if item.time_period == 'morning' %}เช้า 🌅
+                                        {% elif item.time_period == 'afternoon' %}บ่าย ☀️
+                                        {% else %}ค่ำ 🌇{% endif %}
+                                    </td>
+                                    <td>{{ item.temp_range }}°C | U: {{ item.u_value }}</td>
+                                    <td>
+                                        {% if item.status == 'success' %}
+                                        <span class="badge badge-success">สำเร็จ</span>
+                                        {% elif item.status == 'error' %}
+                                        <span class="badge badge-error">ผิดพลาด</span>
+                                        {% else %}
+                                        <span class="badge badge-warning">ยกเลิก</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.processed_count }}</td>
+                                    <td>
+                                        <button class="btn-secondary btn-sm" onclick="viewLog('{{ item.id }}')">
+                                            ดู Log
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 56px; height: 56px; margin: 0 auto 16px auto; display: block; stroke: var(--text-darker);">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <p style="font-size: 1rem; color: var(--text-muted);">ยังไม่มีประวัติการทำงานในระบบ</p>
+                        <a href="/" class="btn-primary btn-sm" style="display: inline-block; margin-top: 14px; text-decoration: none;">ไปที่ Dashboard เพื่อเริ่มทำงาน</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Log Details Modal -->
+    <div id="logModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                    Execution Details
+                </h3>
+                <button class="modal-close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modalLogTerminal" class="terminal-body" style="height: 380px;">
+                    <!-- Logs dynamically injected -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const historyData = {{ history_json|safe }};
+
+        function viewLog(id) {
+            const item = historyData.find(h => h.id === id);
+            if (!item) return;
+
+            const modal = document.getElementById('logModal');
+            const title = document.getElementById('modalTitle');
+            const terminal = document.getElementById('modalLogTerminal');
+
+            title.textContent = `Execution Log [${item.timestamp}] - ID ${item.start_row} ถึง ${item.end_row}`;
+            terminal.innerHTML = '';
+
+            if (item.logs && item.logs.length > 0) {
+                item.logs.forEach(log => {
+                    const line = document.createElement('div');
+                    line.style.marginBottom = '4px';
+                    if (log.type === 'error') line.style.color = '#ef4444';
+                    else if (log.type === 'success') line.style.color = '#10b981';
+                    else if (log.type === 'warning') line.style.color = '#eab308';
+                    else line.style.color = '#94a3b8';
+                    
+                    line.textContent = `[${log.time || ''}] > ${log.message}`;
+                    terminal.appendChild(line);
+                });
+            } else {
+                terminal.innerHTML = '<div style="color: #64748b;">ไม่มีรายละเอียด Log สำหรับรอบนี้</div>';
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('logModal').classList.add('hidden');
+        }
+
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Close on overlay click
+        document.getElementById('logModal').addEventListener('click', (e) => {
+            if (e.target.id === 'logModal') closeModal();
+        });
+
+        function clearHistory() {
+            if (confirm('คุณแน่ใจหรือไม่ว่าต้องการล้างประวัติการทำงานทั้งหมด?')) {
+                fetch('/api/history', { method: 'DELETE' })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.reload();
+                        }
+                    })
+                    .catch(err => alert('ไม่สามารถล้างประวัติได้: ' + err));
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -1,3 +1,46 @@
+// --- Sound Chimes (Web Audio API) ---
+function playSuccessChime() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12); // A5
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.5);
+    } catch (e) {
+        console.warn('Audio chime unavailable', e);
+    }
+}
+
+function playErrorChime() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, ctx.currentTime);
+        osc.frequency.setValueAtTime(164.81, ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.45);
+    } catch (e) {
+        console.warn('Audio chime unavailable', e);
+    }
+}
+
 // --- Live Clock Logic ---
 function updateClock() {
     const timeEl = document.getElementById('liveTime');
@@ -111,11 +154,13 @@ document.getElementById('automationForm').addEventListener('submit', function(e)
                 resetButtons();
                 
                 if (data.type === 'success') {
+                    playSuccessChime();
                     successIcon.classList.remove('hidden');
                     statusTitle.textContent = 'เสร็จสิ้น!';
                     statusTitle.style.color = '#10b981';
                     statusMessage.textContent = 'กระบวนการทำงานจบลงแล้ว';
                 } else {
+                    playErrorChime();
                     errorIcon.classList.remove('hidden');
                     statusTitle.textContent = 'เกิดข้อผิดพลาด';
                     statusTitle.style.color = '#ef4444';
@@ -132,7 +177,7 @@ document.getElementById('automationForm').addEventListener('submit', function(e)
         eventSource.close();
         
         // Reset UI if it errors out before success/error message
-        if (!submitBtn.classList.contains('hidden') === false) { // if submitBtn is currently hidden
+        if (submitBtn.classList.contains('hidden')) { // if submitBtn is currently hidden
             errorIcon.classList.remove('hidden');
             statusTitle.textContent = 'ขาดการเชื่อมต่อ';
             statusTitle.style.color = '#ef4444';

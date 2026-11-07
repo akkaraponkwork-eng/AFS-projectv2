@@ -14,5 +14,5 @@ COPY . .
 # เปิด Port 10000 (Render มักจะใช้ Port นี้)
 EXPOSE 10000
 
-# สั่งรันแอปพลิเคชันด้วย Gunicorn
-CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:10000", "--timeout", "300", "app:app"]
+# สั่งรันแอปพลิเคชันด้วย Gunicorn (เพิ่ม threads เพื่อรองรับ SSE และคำสั่ง stop พร้อมกัน)
+CMD ["gunicorn", "-w", "1", "--threads", "4", "-b", "0.0.0.0:10000", "--timeout", "300", "app:app"]

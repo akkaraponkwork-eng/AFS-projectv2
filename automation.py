@@ -5,16 +5,72 @@ from playwright.sync_api import sync_playwright
 import json
 import os
 
-def run_automation(username, password, temp_min, temp_max, start_row, end_row, time_period, show_browser=True, u_value='skip', state=None):
+def run_automation(username, password, temp_min, temp_max, start_row, end_row, time_period, show_browser=True, u_value='skip', state=None, system_url=None):
     if state is None:
         state = {"should_stop": False}
         
     def log(msg, type="info"):
         return json.dumps({"type": type, "message": msg}) + "\n"
 
+    def dismiss_modals(page):
+        """ตรวจจับและกดปิด Popup/Modal ประกาศ หรือ Dialog กลางจออัตโนมัติ (รวมถึงปุ่ม X)"""
+        dismiss_selectors = [
+            # ปุ่ม X / Close icons & attributes
+            "ngb-modal-window button.close",
+            "ngb-modal-window [aria-label='Close']",
+            "ngb-modal-window [aria-label='close']",
+            "ngb-modal-window [aria-label='ปิด']",
+            ".modal button.close",
+            ".modal .btn-close",
+            ".modal [aria-label='Close']",
+            ".modal [aria-label='close']",
+            ".modal [aria-label='ปิด']",
+            "button:has-text('×')", # สัญลักษณ์กากบาท &times;
+            "button:has-text('✕')",
+            "button:has-text('✖')",
+            ".modal button:has(fa-icon[icon='times'])",
+            ".modal button:has(svg[data-icon='times'])",
+            ".modal-header .close",
+            ".swal2-close",
+            # ปุ่มข้อความยืนยัน / ปิด
+            "ngb-modal-window button:has-text('ปิด')",
+            "ngb-modal-window button:has-text('ตกลง')",
+            "ngb-modal-window button:has-text('รับทราบ')",
+            ".modal button:has-text('ปิด')",
+            ".modal button:has-text('ตกลง')",
+            ".modal button:has-text('รับทราบ')",
+            ".swal2-confirm",
+            "button:has-text('ยอมรับ')",
+            "button:has-text('รับทราบ')",
+            "button:has-text('ปิด')"
+        ]
+        for sel in dismiss_selectors:
+            try:
+                btns = page.locator(sel)
+                if btns.count() > 0 and btns.first.is_visible():
+                    btns.first.click(timeout=1000)
+                    page.wait_for_timeout(300)
+                    break
+            except Exception:
+                pass
+
+        # Fallback: สั่งกดปุ่ม Escape บนคีย์บอร์ด (กรณี modal รองรับ keyboard dismiss)
+        try:
+            if page.locator("ngb-modal-window, .modal.show, .swal2-container").count() > 0:
+                page.keyboard.press("Escape")
+                page.wait_for_timeout(300)
+        except Exception:
+            pass
+
+    target_url = system_url if system_url else "https://rtamed.rta.mi.th:8443/login"
+
     # ถ้าทำงานบน Server ของ Render บังคับให้เป็นแบบซ่อนหน้าจอ (เพราะเซิร์ฟเวอร์ไม่มีหน้าจอ)
     if os.environ.get('RENDER') == 'true':
         show_browser = False
+
+    if start_row > end_row:
+        yield log("ค่า Start ID ต้องน้อยกว่าหรือเท่ากับ End ID", "error")
+        return
 
     with sync_playwright() as p:
         yield log("กำลังเปิดเบราว์เซอร์...")
@@ -28,7 +84,9 @@ def run_automation(username, password, temp_min, temp_max, start_row, end_row, t
         
         try:
             yield log("กำลังเข้าสู่หน้าล็อกอิน...")
-            page.goto("https://rtamed.rta.mi.th:8443/login")
+            page.goto(target_url)
+            page.wait_for_timeout(1000)
+            dismiss_modals(page)
             page.wait_for_selector('input')
             
             if state.get("should_stop"):
@@ -45,8 +103,13 @@ def run_automation(username, password, temp_min, temp_max, start_row, end_row, t
                 return
             
             yield log("กำลังกดเข้าสู่ระบบ...")
-            page.locator('button').click()
+            login_btn = page.locator('button[type="submit"], form button, button:has-text("เข้าสู่ระบบ"), button:has-text("Login")')
+            if login_btn.count() > 0:
+                login_btn.first.click()
+            else:
+                page.locator('button').first.click()
             page.wait_for_timeout(3000)
+            dismiss_modals(page)
             
             if state.get("should_stop"):
                 yield log("ยกเลิกการทำงาน", "warning")
@@ -55,13 +118,13 @@ def run_automation(username, password, temp_min, temp_max, start_row, end_row, t
             yield log("กำลังไปยังเมนู 'การคัดกรอง'...")
             page.get_by_text("การคัดกรอง").click()
             page.wait_for_timeout(2000)
+            dismiss_modals(page)
             
             processed = 0
+            processed_ids = set()
             yield log(f"เริ่มดำเนินการตั้งแต่ลำดับที่ {start_row} ถึง {end_row}")
             
-            target_row = start_row
-            
-            while target_row <= end_row:
+            while True:
                 if state.get("should_stop"):
                     yield log("ยกเลิกการทำงาน", "warning")
                     break
@@ -72,11 +135,9 @@ def run_automation(username, password, temp_min, temp_max, start_row, end_row, t
                     break
                     
                 found_on_page = False
+                max_row_on_page = -1
                 
                 for row_idx, row in enumerate(rows):
-                    if target_row > end_row:
-                        break
-                        
                     if state.get("should_stop"):
                         break
                         
@@ -85,9 +146,12 @@ def run_automation(username, password, temp_min, temp_max, start_row, end_row, t
                         first_col_text = row.locator('td').first.inner_text().strip()
                         row_num = int(first_col_text)
                     except Exception:
-                        continue # Skip header or invalid rows
+                        continue # Skip header or invalid/sub rows
                         
-                    if row_num == target_row:
+                    if row_num > max_row_on_page:
+                        max_row_on_page = row_num
+                        
+                    if start_row <= row_num <= end_row and row_num not in processed_ids:
                         target_temp = round(random.uniform(temp_min, temp_max), 1)
                         
                         # --- Real interaction ---
@@ -116,50 +180,57 @@ def run_automation(username, password, temp_min, temp_max, start_row, end_row, t
                                         u_popup = page.locator("ngb-popover-window, .popover").last
                                         if u_popup.is_visible():
                                             u_popup.get_by_text(actual_u, exact=True).click()
-                                            yield log(f"[{target_row}] กรอกค่า U={actual_u} เรียบร้อย", "info")
+                                            yield log(f"[{row_num}] กรอกค่า U={actual_u} เรียบร้อย", "info")
                                         else:
-                                            yield log(f"[{target_row}] ไม่พบ Popup สำหรับกรอกค่า U", "warning")
+                                            yield log(f"[{row_num}] ไม่พบ Popup สำหรับกรอกค่า U", "warning")
                                         page.wait_for_timeout(300)
                                     else:
-                                        yield log(f"[{target_row}] ไม่พบช่องตารางสำหรับกรอก U (เวลา: {time_period})", "warning")
+                                        yield log(f"[{row_num}] ไม่พบช่องตารางสำหรับกรอก U (เวลา: {time_period})", "warning")
                                 else:
-                                    yield log(f"[{target_row}] ไม่พบป้าย 'U' ในหน้านี้", "warning")
-                            next_row = page.locator('tbody tr').nth(row_idx + 1)
-                            
-                            # The columns in the T row are: 0: 'T', 1: morning, 2: afternoon, 3: night, etc.
-                            target_td = next_row.locator('td').nth(time_offset)
-                            
-                            # Click the cell (or the button inside it)
-                            target_td.click()
-                            
-                            # Wait for the popup to appear
-                            popup = page.locator("ngb-popover-window, .popover").last
-                            popup.wait_for(state="visible", timeout=5000)
-                            
-                            # Click the whole number
-                            popup.get_by_text(str(int(target_temp)), exact=True).click()
-                            
-                            # Give a tiny pause for UI to react
-                            page.wait_for_timeout(300)
-                            
-                            # Click the decimal part if popup is still open
-                            if popup.is_visible():
-                                decimal_part = int(round((target_temp - int(target_temp)) * 10))
-                                if decimal_part == 0:
-                                    # ถ้า .0 ให้กดเลขเดิมซ้ำ
-                                    popup.get_by_text(str(int(target_temp)), exact=True).click(timeout=2000)
-                                else:
-                                    popup.get_by_text(f".{decimal_part}", exact=True).click(timeout=2000)
-                            
+                                    yield log(f"[{row_num}] ไม่พบป้าย 'U' ในหน้านี้", "warning")
+                                    
+                            if row_idx + 1 < len(rows):
+                                next_row = page.locator('tbody tr').nth(row_idx + 1)
+                                
+                                # The columns in the T row are: 0: 'T', 1: morning, 2: afternoon, 3: night, etc.
+                                target_td = next_row.locator('td').nth(time_offset)
+                                
+                                # Click the cell (or the button inside it)
+                                target_td.click()
+                                
+                                # Wait for the popup to appear
+                                popup = page.locator("ngb-popover-window, .popover").last
+                                popup.wait_for(state="visible", timeout=5000)
+                                
+                                # Click the whole number
+                                popup.get_by_text(str(int(target_temp)), exact=True).click()
+                                
+                                # Give a tiny pause for UI to react
+                                page.wait_for_timeout(300)
+                                
+                                # Click the decimal part if popup is still open
+                                if popup.is_visible():
+                                    decimal_part = int(round((target_temp - int(target_temp)) * 10))
+                                    if decimal_part == 0:
+                                        # ตรวจสอบปุ่ม .0 ก่อน หากไม่มีให้กดเลขจำนวนเต็มซ้ำ
+                                        zero_btn = popup.get_by_text(".0", exact=True)
+                                        if zero_btn.count() > 0 and zero_btn.first.is_visible():
+                                            zero_btn.first.click(timeout=2000)
+                                        else:
+                                            popup.get_by_text(str(int(target_temp)), exact=True).click(timeout=2000)
+                                    else:
+                                        popup.get_by_text(f".{decimal_part}", exact=True).click(timeout=2000)
+                                
+                                processed += 1
+                                processed_ids.add(row_num)
+                                yield log(f"[{processed}] กรอกอุณหภูมิ {target_temp} สำหรับลำดับที่ {row_num} เรียบร้อย")
+                                page.wait_for_timeout(500)
+                                found_on_page = True
+                            else:
+                                yield log(f"[{row_num}] ไม่พบแถว T ถัดไปสำหรับกรอกอุณหภูมิ", "warning")
+                                
                         except Exception as e:
                             yield log(f"เกิดข้อผิดพลาดในการคลิกอุณหภูมิลำดับที่ {row_num}: {str(e)}", "warning")
-                        
-                        processed += 1
-                        yield log(f"[{processed}] กรอกอุณหภูมิ {target_temp} สำหรับลำดับที่ {row_num} เรียบร้อย")
-                        page.wait_for_timeout(500)
-                        
-                        target_row += 1
-                        found_on_page = True
                 
                 if state.get("should_stop"):
                     break
@@ -206,28 +277,32 @@ def run_automation(username, password, temp_min, temp_max, start_row, end_row, t
                     except Exception as e:
                         yield log(f"ไม่สามารถกดปุ่มบันทึก/ตกลงได้: {str(e)}", "warning")
                         
-                # Check if we need to go to next page
-                if target_row <= end_row:
-                    yield log("กำลังเปลี่ยนไปยังหน้าถัดไป...")
-                    try:
-                        # 1. Try to click the page number immediately following the active page
-                        next_page_number = page.locator(".pagination .active + li a, .pagination .active + .page-item .page-link").first
-                        
-                        if next_page_number.count() > 0:
-                            next_page_number.click()
+                # Check if we have completed all requested rows
+                if max_row_on_page >= end_row:
+                    yield log(f"ตรวจพบข้อมูลถึงลำดับที่ {max_row_on_page} ครอบคลุมเป้าหมายแล้ว")
+                    break
+
+                # Otherwise check if we can go to next page
+                yield log("กำลังเปลี่ยนไปยังหน้าถัดไป...")
+                try:
+                    # 1. Try to click the page number immediately following the active page
+                    next_page_number = page.locator(".pagination .active + li a, .pagination .active + .page-item .page-link").first
+                    
+                    if next_page_number.count() > 0:
+                        next_page_number.click()
+                        page.wait_for_timeout(2000)
+                    else:
+                        # 2. Try the "Next" arrow (›) or text
+                        next_btn = page.locator("a:has-text('›'), a:has-text('Next'), a:has-text('ถัดไป'), [aria-label='Next'], [aria-label='ถัดไป']")
+                        if next_btn.count() > 0:
+                            next_btn.first.click()
                             page.wait_for_timeout(2000)
                         else:
-                            # 2. Try the "Next" arrow (›) or text
-                            next_btn = page.locator("a:has-text('›'), a:has-text('Next'), a:has-text('ถัดไป'), [aria-label='Next'], [aria-label='ถัดไป']")
-                            if next_btn.count() > 0:
-                                next_btn.first.click()
-                                page.wait_for_timeout(2000)
-                            else:
-                                yield log("ไม่พบปุ่มหน้าถัดไป หรือถึงหน้าสุดท้ายแล้ว")
-                                break
-                    except Exception as e:
-                        yield log(f"เกิดข้อผิดพลาดในการเปลี่ยนหน้า: {str(e)}", "warning")
-                        break
+                            yield log("ไม่พบปุ่มหน้าถัดไป หรือถึงหน้าสุดท้ายแล้ว")
+                            break
+                except Exception as e:
+                    yield log(f"เกิดข้อผิดพลาดในการเปลี่ยนหน้า: {str(e)}", "warning")
+                    break
 
             yield log(f"ทำงานเสร็จสิ้นทั้งหมด {processed} รายการ!", "success")
 

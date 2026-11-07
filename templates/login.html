@@ -90,12 +90,16 @@
             <form class="login-form" method="POST" action="/login">
                 <div class="input-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required placeholder="Enter your username" autocomplete="username">
+                    <input type="text" id="username" name="username" value="{{ saved_username or '' }}" required placeholder="Enter your username" autocomplete="username">
                 </div>
                 <div class="input-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required placeholder="Enter your password" autocomplete="current-password">
                 </div>
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: var(--text-muted); cursor: pointer; user-select: none;">
+                    <input type="checkbox" name="remember" id="remember" checked style="accent-color: var(--primary); width: 16px; height: 16px;">
+                    <span>จดจำการเข้าสู่ระบบ (บันทึกลง data/session.json)</span>
+                </label>
                 <button type="submit" class="btn-primary">
                     Login
                 </button>
